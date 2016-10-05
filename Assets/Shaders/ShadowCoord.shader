@@ -35,7 +35,7 @@
 
         //TRANSFER_SHADOW(o)
         #if defined(UNITY_NO_SCREENSPACE_SHADOWS)
-          o._ShadowCoord = mul( unity_WorldToShadow[0], mul( unity_ObjectToWorld, v.vertex ) );
+          o._ShadowCoord = mul( unity_WorldToShadow[0], mul( unity_ObjectToWorld, v.vertex ));
         #else
           o._ShadowCoord = ComputeScreenPos(o.pos);
         #endif
