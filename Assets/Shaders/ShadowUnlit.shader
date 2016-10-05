@@ -1,6 +1,7 @@
 ﻿Shader "ShadowUnlit" {
   Properties {
     _MainTex ("Texture", 2D) = "white" {}
+    [Toggle(_USE_CUSTOM_SHADOW)] _UseCustomShadow ("Receive Shadow", Float) = 1
   }
   SubShader {
     Tags { "RenderType"="Opaque" }
@@ -8,6 +9,7 @@
 
     CGINCLUDE
       //#include "AutoLight.cginc"
+      #if defined(_USE_CUSTOM_SHADOW)
 
       #define SHADOW_COORDS(idx1) float4 _CustomShadowCoord : TEXCOORD##idx1;
 
@@ -15,8 +17,6 @@
       float4 _WorldSpaceShadowCameraPos;
       float4 world2shadow(float4 vertex) {
         float4 wpos = mul( unity_ObjectToWorld, vertex);
-
-        // shadow camera space
         float4 coord = mul( _CustomShadowViewProj, wpos);
         coord.z = length(_WorldSpaceShadowCameraPos.xyz - wpos.xyz);
         return coord;
@@ -43,8 +43,11 @@
       }
       #define SHADOW_ATTENUATION(i) sampleShadow(i._CustomShadowCoord)
 
-      #define DEBUG_SHADOW_DEPTH(i) float4(1,1,1,1) * sampleShadowDepth(i._CustomShadowCoord)
-      #define DEBUG_DEPTH(i) float4(1,1,1,1) * sampleDepth(i._CustomShadowCoord)
+      #else
+      #define SHADOW_COORDS(idx1)
+      #define TRANSFER_SHADOW(a)
+      #define SHADOW_ATTENUATION(a) 1.0
+      #endif
     ENDCG
 
     Pass {
@@ -54,6 +57,7 @@
       #pragma vertex vert
       #pragma fragment frag
       #pragma multi_compile_fwdbase
+      #pragma multi_compile __ _USE_CUSTOM_SHADOW
       #include "UnityCG.cginc"
 
       struct v2f {
