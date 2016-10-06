@@ -8,7 +8,8 @@ using System;
 public class ShadowManager : MonoBehaviour {
   [Header("UI")]
   public List<GameObject> panels;
-  public Slider slider;
+  public Slider sliderCamera;
+  public Slider sliderShadow;
 
   [Header("Objects")]
   public Transform cameraTrans;
@@ -51,7 +52,7 @@ public class ShadowManager : MonoBehaviour {
 
   public void ChangeResolution() {
     curRes = (curRes + 1) % 3;
-    //Screen.SetResolution ((int)(scrRes.width * res [curRes]), (int)(scrRes.height * res [curRes]), true);
+    Screen.SetResolution ((int)(scrRes.width * res [curRes]), (int)(scrRes.height * res [curRes]), true);
   }
 
   public void ChangeShadow() {
@@ -126,8 +127,12 @@ public class ShadowManager : MonoBehaviour {
     panels.ForEach (p => p.SetActive (isActive));
   }
 
-  public void OnChangeSlider() {
-    cameraTrans.localPosition = Vector3.forward * slider.value;
+  public void OnChangeSliderCamera() {
+    cameraTrans.localPosition = Vector3.forward * sliderCamera.value;
+  }
+
+  public void OnChangeSliderShadow() {
+    QualitySettings.shadowDistance = sliderShadow.value;
   }
 
 }
