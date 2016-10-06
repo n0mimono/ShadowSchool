@@ -5,12 +5,15 @@ using System.Collections;
 [RequireComponent(typeof(Camera))]
 public class ShadowProjector : MonoBehaviour {
   [Header("Light Option")]
+  public Transform target;
   public Transform dirLight;
   public float     distance;
+  public Vector3   offset;
 
   [Header("Shadow Map Options")]
-  public int width;
-  public int height;
+  public Camera        camera;
+  public int           width;
+  public int           height;
   public RenderTexture shadowMap;
   public Shader        replacedShader;
 
@@ -18,16 +21,20 @@ public class ShadowProjector : MonoBehaviour {
   public Projector projector;
   public Material  projMat;
 
-  private Camera camera;
+  void Start() {
+    CreateShadowMap ();
+  }
 
   void LateUpdate() {
     if (shadowMap == null) CreateShadowMap ();
 
     // auto-tranform
-    transform.forward = dirLight.forward;
-    transform.position = -1f * transform.forward * distance;
+    transform.position = target.position -1f * transform.forward * distance;
+    transform.LookAt (target);
+    transform.position += offset;
 
     // auto-set projector
+    projector.material.SetTexture ("_ShadowTex", shadowMap);
     projector.orthographicSize = camera.orthographicSize;
   }
 
@@ -37,15 +44,12 @@ public class ShadowProjector : MonoBehaviour {
     shadowMap.name = "CustomShadowMap_" + name;
 
     // set camera and rendering settings
-    camera = GetComponent<Camera> ();
     camera.depthTextureMode = DepthTextureMode.Depth;
     camera.targetTexture = shadowMap;
     camera.SetReplacementShader(replacedShader, "");
 
     // set projection material
-    //projMat = Instantiate(projMat);
-    //projMat.SetTexture ();
-    //projector.material = projMat;
+    projector.material = Instantiate(projMat);
   }
 
 }
