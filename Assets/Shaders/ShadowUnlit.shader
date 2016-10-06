@@ -39,7 +39,7 @@
       float sampleShadow(float4 coord) {
         float shadowDepth = sampleShadowDepth(coord);
         float depth = sampleDepth(coord);
-        return depth < shadowDepth? 1 : 0;
+        return depth < shadowDepth ? 1 : 0;
       }
       #define SHADOW_ATTENUATION(i) sampleShadow(i._CustomShadowCoord)
 
